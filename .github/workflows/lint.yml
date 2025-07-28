@@ -1,0 +1,30 @@
+# Use a Node.js image to get access to npm
+image: node:18-slim
+
+# Cache node_modules to speed up future jobs
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - node_modules/
+
+# Define the linting job
+lint-and-format:
+  stage: test
+  script:
+    # 1. Install dependencies from your package.json
+    - echo "Installing dependencies..."
+    - npm install
+    
+    # 2. Run the linter (e.g., ESLint)
+    - echo "Running linter..."
+    - npm run lint
+    
+    # 3. Run the format checker (e.g., Prettier)
+    - echo "Checking code format..."
+    - npm run format-check
+  
+  # This rule ensures the job only runs for merge requests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
